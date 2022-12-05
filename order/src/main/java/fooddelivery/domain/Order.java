@@ -67,7 +67,15 @@ public class Order  {
         // it is NOT A GOOD PRACTICE. instead, Event-Policy mapping is recommended.
 
 
+        fooddelivery.external.Payment payment = new fooddelivery.external.Payment();
+        payment.setOrderId(getId());
+        if (getPrice()!=null)
+            payment.setPrice(getPrice());
 
+        OrderApplication.applicationContext.getBean(fooddelivery.external.PaymentService.class)
+            .pay(getId(), payment);
+
+        setStatus("주문됨");
 
         OrderPlaced orderPlaced = new OrderPlaced(this);
         orderPlaced.publishAfterCommit();
@@ -87,7 +95,7 @@ public class Order  {
         return orderRepository;
     }
 
-    public void cancel order(){
+    public void cancelOrder(){
         //
     }
 
