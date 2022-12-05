@@ -70,31 +70,54 @@ public class Cooking  {
 
 
     public void accept(AcceptCommand acceptCommand){
-        OrderAccepted orderAccepted = new OrderAccepted(this);
-        orderAccepted.publishAfterCommit();
 
-        OrderRejected orderRejected = new OrderRejected(this);
-        orderRejected.publishAfterCommit();
+        if (acceptCommand.getAccept()) {
+            
+            OrderAccepted orderAccepted = new OrderAccepted(this);
+            orderAccepted.publishAfterCommit();
+
+            setStatus("주문수락됨");
+
+        } else {
+            
+            OrderRejected orderRejected = new OrderRejected(this);
+            orderRejected.publishAfterCommit();
+
+            setStatus("주문거절됨");
+
+        }
 
     }
     public void start(){
         CookingStarted cookingStarted = new CookingStarted(this);
         cookingStarted.publishAfterCommit();
 
+        setStatus("요리시작됨");
+
     }
     public void finish(){
         CookingFinished cookingFinished = new CookingFinished(this);
         cookingFinished.publishAfterCommit();
 
+        setStatus("요리완료됨");
+
     }
 
     public static void copyOrderInfo(OrderPlaced orderPlaced){
 
-        /** Example 1:  new item 
+        /** Example 1:  new item */
         Cooking cooking = new Cooking();
+
+        cooking.setOrderId(orderPlaced.getId());
+        cooking.setFoodId(orderPlaced.getFoodId());
+        cooking.setCustomerId(orderPlaced.getCustomerId());
+        cooking.setQty(orderPlaced.getQty());
+        cooking.setAddress(orderPlaced.getAddress());
+        cooking.setStatus("미결제");
+        
         repository().save(cooking);
 
-        */
+        
 
         /** Example 2:  finding and process
         
@@ -117,16 +140,16 @@ public class Cooking  {
 
         */
 
-        /** Example 2:  finding and process
+        /** Example 2:  finding and process */
         
-        repository().findById(payAccepted.get???()).ifPresent(cooking->{
+        repository().findByOrderId(payAccepted.getOrderId()).ifPresent(cooking->{
             
-            cooking // do something
+            cooking.setStatus("결제승인"); // do something
             repository().save(cooking);
 
 
          });
-        */
+        
 
         
     }

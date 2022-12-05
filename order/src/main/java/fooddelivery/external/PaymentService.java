@@ -10,7 +10,10 @@ import java.util.Date;
 
 @FeignClient(name = "payment", url = "${api.url.payment}")
 public interface PaymentService {
-    @RequestMapping(method= RequestMethod.PUT, path="/payments/{id}/pay")
-    public void pay(@PathVariable("id") Long id, @RequestBody Payment payment);
+    // @RequestMapping(method= RequestMethod.PUT, path="/payments/{id}/pay")
+    // public void pay(@PathVariable("id") Long id, @RequestBody Payment payment);
+
+    @RequestMapping(method= RequestMethod.POST, path="/payments")
+    public void pay(@RequestBody Payment payment);
 }
 

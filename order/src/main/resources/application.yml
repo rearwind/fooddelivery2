@@ -41,7 +41,7 @@ logging:
 
 api:
   url:
-    payment: payment:8082
+    payment: localhost:8082
 
 
 server:
@@ -75,6 +75,6 @@ spring:
 
 api:
   url:
-    payment: payment:8080
+    payment: localhost:8080
 
 

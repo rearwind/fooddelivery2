@@ -3,6 +3,11 @@ package fooddelivery.domain;
 import fooddelivery.domain.PayAccepted;
 import fooddelivery.PaymentApplication;
 import javax.persistence.*;
+
+import org.springframework.beans.BeanUtils;
+import org.springframework.transaction.support.TransactionSynchronizationAdapter;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
+
 import java.util.List;
 import lombok.Data;
 import java.util.Date;
@@ -53,9 +58,42 @@ public class Payment  {
     @PrePersist
     public void onPrePersist(){
 
+        if ("cancel".equals(action)) {
 
-        PayAccepted payAccepted = new PayAccepted(this);
-        payAccepted.publishAfterCommit();
+            PayCancelled payCancelled = new PayCancelled();
+            BeanUtils.copyProperties(this, payCancelled);
+            payCancelled.publish();
+
+            
+            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+                @Override
+                public void beforeCommit(boolean readOnly) {
+                    payAccepted.publish();
+                }
+            });
+
+
+        } else {
+
+            PayAccepted payAccepted = new PayAccepted();
+            BeanUtils.copyProperties(this, payAccepted);
+
+        
+            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+                @Override
+                public void beforeCommit(boolean readOnly) {
+                    payAccepted.publish();
+                }
+            });
+
+
+            // try {
+            //     Thread.currentThread().sleep((long) (400 + Math.random() * 250));
+            // } catch (InterruptedException e) {
+            //     e.printStackTrace();
+            // }
+        }
+
 
     }
 

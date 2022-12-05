@@ -66,21 +66,20 @@ public class Order  {
         //Following code causes dependency to external APIs
         // it is NOT A GOOD PRACTICE. instead, Event-Policy mapping is recommended.
 
-
         fooddelivery.external.Payment payment = new fooddelivery.external.Payment();
+
         payment.setOrderId(getId());
         if (getPrice()!=null)
             payment.setPrice(getPrice());
 
         OrderApplication.applicationContext.getBean(fooddelivery.external.PaymentService.class)
-            .pay(getId(), payment);
-
-        setStatus("주문됨");
+            .pay(payment);
 
         OrderPlaced orderPlaced = new OrderPlaced(this);
         orderPlaced.publishAfterCommit();
 
     }
+
     @PreRemove
     public void onPreRemove(){
 
@@ -95,7 +94,7 @@ public class Order  {
         return orderRepository;
     }
 
-    public void cancelOrder(){
+    public void cancel(){
         //
     }
 
